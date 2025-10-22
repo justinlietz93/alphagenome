@@ -14,6 +14,11 @@
 
 """Script to process GTF into feather file."""
 
+import os
+import tempfile
+from urllib import parse
+from urllib import request
+
 from absl import app
 from absl import flags
 from absl import logging
@@ -30,7 +35,17 @@ _OUTPUT_PATH = flags.DEFINE_string(
 
 def main(_) -> None:
   logging.info('Reading GTF from %s', _GTF_PATH.value)
-  gtf = pyranges.read_gtf(_GTF_PATH.value, as_df=True, duplicate_attr=True)
+  url = parse.urlparse(_GTF_PATH.value)
+  if all([url.scheme, url.netloc]):
+    with tempfile.TemporaryDirectory() as d:
+      path, _ = request.urlretrieve(
+          _GTF_PATH.value,
+          filename=os.path.join(d, os.path.basename(_GTF_PATH.value)),
+      )
+      logging.info('Downloaded GTF to %s', path)
+      gtf = pyranges.read_gtf(path, as_df=True, duplicate_attr=True)
+  else:
+    gtf = pyranges.read_gtf(_GTF_PATH.value, as_df=True, duplicate_attr=True)
 
   gtf['gene_id_nopatch'] = gtf['gene_id'].str.split('.', expand=True)[0]
 
