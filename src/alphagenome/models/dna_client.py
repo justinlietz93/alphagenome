@@ -786,6 +786,7 @@ class DnaClient(dna_model.DnaModel):
       variant_scorers: Sequence[variant_scorers_lib.VariantScorerTypes] = (),
       *,
       organism: Organism = Organism.HOMO_SAPIENS,
+      interval_variant: genome.Variant | None = None,
       progress_bar: bool = True,
       max_workers: int = dna_model.DEFAULT_MAX_WORKERS,
   ) -> list[list[anndata.AnnData]]:
@@ -798,6 +799,9 @@ class DnaClient(dna_model.DnaModel):
         variant. If no variant scorers are provided, the recommended variant
         scorers for the organism will be used.
       organism: Organism to use for the prediction.
+      interval_variant: Optional variant to apply to the sequence. If provided,
+        the alternate allele is used for in-silico mutagenesis, otherwise the
+        unaltered reference sequence is used.
       progress_bar: If True, show a progress bar.
       max_workers: Number of parallel workers to use.
 
@@ -836,6 +840,9 @@ class DnaClient(dna_model.DnaModel):
           organism=organism.to_proto(),
           variant_scorers=[vs.to_proto() for vs in variant_scorers],
           model_version=self._model_version,
+          interval_variant=interval_variant.to_proto()
+          if interval_variant is not None
+          else None,
       )
       responses = dna_model_service_pb2_grpc.DnaModelServiceStub(
           self._channel

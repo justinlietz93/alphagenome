@@ -1644,6 +1644,7 @@ class ClientTest(parameterized.TestCase):
           dict(
               interval=genome.Interval('chr1', 0, 16_384),
               ism_interval=genome.Interval('chr1', 10, 11),
+              interval_variant=None,
               scorers=[
                   variant_scorers.CenterMaskScorer(
                       requested_output=dna_client.OutputType.ATAC,
@@ -1666,7 +1667,7 @@ class ClientTest(parameterized.TestCase):
                           'interval': genome.Interval('chr1', 0, 16_384),
                           'variant_scorer': variant_scorers.CenterMaskScorer(
                               requested_output=dna_client.OutputType.ATAC,
-                              width=10_001,
+                              width=501,
                               aggregation_type=(
                                   variant_scorers.AggregationType.DIFF_MEAN
                               ),
@@ -1682,7 +1683,47 @@ class ClientTest(parameterized.TestCase):
           ),
           dict(
               interval=genome.Interval('chr1', 0, 16_384),
+              ism_interval=genome.Interval('chr1', 10, 11),
+              interval_variant=genome.Variant('chr1', 11, 'A', 'C'),
+              scorers=[
+                  variant_scorers.CenterMaskScorer(
+                      requested_output=dna_client.OutputType.ATAC,
+                      width=501,
+                      aggregation_type=(
+                          variant_scorers.AggregationType.DIFF_MEAN
+                      ),
+                  ),
+              ],
+              example_scores=[
+                  anndata.AnnData(
+                      X=np.zeros((5, 10)),
+                      obs=pd.DataFrame({'gene_id': [f'{i}' for i in range(5)]}),
+                      var=pd.DataFrame({
+                          'name': [f'{i}' for i in range(10)],
+                          'strand': ['.'] * 10,
+                      }),
+                      uns={
+                          'interval': genome.Interval('chr1', 0, 16_384),
+                          'variant_scorer': variant_scorers.CenterMaskScorer(
+                              requested_output=dna_client.OutputType.ATAC,
+                              width=10_001,
+                              aggregation_type=(
+                                  variant_scorers.AggregationType.DIFF_MEAN
+                              ),
+                          ),
+                      },
+                  ),
+              ],
+              expected_variants=[
+                  genome.Variant('chr1', 11, 'C', 'A'),
+                  genome.Variant('chr1', 11, 'C', 'G'),
+                  genome.Variant('chr1', 11, 'C', 'T'),
+              ],
+          ),
+          dict(
+              interval=genome.Interval('chr1', 0, 16_384),
               ism_interval=genome.Interval('chr1', 10, 21),
+              interval_variant=None,
               scorers=[
                   variant_scorers.CenterMaskScorer(
                       requested_output=dna_client.OutputType.ATAC,
@@ -1775,13 +1816,26 @@ class ClientTest(parameterized.TestCase):
       bytes_per_chunk: int,
       example_scores,
       expected_variants,
+      interval_variant: genome.Variant | None,
   ):
 
     def _mock_generate(requests, metadata):
       del metadata
       for request in requests:
         ism_interval = genome.Interval.from_proto(request.ism_interval)
-        for variant in ism.ism_variants(ism_interval, 'A' * ism_interval.width):
+        ism_sequence = 'A' * ism_interval.width
+        if request.HasField('interval_variant'):
+          ref_variant = genome.Variant.from_proto(request.interval_variant)
+          self.assertTrue(ref_variant.is_snv)  # Only SNVs supported in test.
+          if ref_variant.reference_overlaps(ism_interval):
+            pos = ref_variant.start - ism_interval.start
+            ism_sequence = (
+                ism_sequence[:pos]
+                + ref_variant.alternate_bases
+                + ism_sequence[pos + 1 :]
+            )
+
+        for variant in ism.ism_variants(ism_interval, ism_sequence):
           yield from _generate_variant_scoring_protos(
               scores=example_scores,
               bytes_per_chunk=bytes_per_chunk,
@@ -1796,6 +1850,7 @@ class ClientTest(parameterized.TestCase):
         interval=interval,
         ism_interval=ism_interval,
         variant_scorers=scorers,
+        interval_variant=interval_variant,
     )
     self.assertLen(ism_scores, len(expected_variants))
     ism_scores = sorted(ism_scores, key=lambda x: str(x[0].uns['variant']))

@@ -232,6 +232,11 @@ message ScoreIsmVariantRequest {
   // Variant scorers to use for the prediction.
   repeated VariantScorer variant_scorers = 4;
 
+  // Optional variant applied to the reference interval. If provided, the
+  // alternate allele is used for in-silico mutagenesis, otherwise the
+  // unaltered reference sequence is used.
+  optional Variant interval_variant = 6;
+
   // Model version to use.
   string model_version = 5;
 }
