@@ -32,6 +32,29 @@ import tqdm.auto
 DEFAULT_MAX_WORKERS = 5
 
 
+@enum.unique
+class ModelVersion(enum.Enum):
+  """Enumeration of all available model versions.
+
+  A fold is a part of the genome that is held out from training, and is used for
+  model validation.
+
+  Folds are numbered from 0 to 3, and represent disjoint subsets of the genome.
+
+  A model version that is designated FOLD_#, where # is an integer from 0 to 3,
+  indicates that the model was trained with that particular fold held out.
+
+  The ALL_FOLDS version refers to the distilled model that was trained on
+  an ensemble of teacher models trained on all folds.
+  """
+
+  ALL_FOLDS = enum.auto()  # Default model version if None explicitly set.
+  FOLD_0 = enum.auto()
+  FOLD_1 = enum.auto()
+  FOLD_2 = enum.auto()
+  FOLD_3 = enum.auto()
+
+
 class Organism(enum.Enum):
   """Enumeration of all the available organisms."""
 

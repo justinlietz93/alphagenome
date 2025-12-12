@@ -16,7 +16,6 @@
 
 from collections.abc import Container, Iterable, Iterator, Mapping, Sequence
 import concurrent.futures
-import enum
 import functools
 import random
 import time
@@ -123,29 +122,7 @@ def retry_rpc(
   return wrapper
 
 
-@enum.unique
-class ModelVersion(enum.Enum):
-  """Enumeration of all available model versions.
-
-  A fold is a part of the genome that is held out from training, and is used for
-  model validation.
-
-  Folds are numbered from 0 to 3, and represent disjoint subsets of the genome.
-
-  A model version that is designated FOLD_#, where # is an integer from 0 to 3,
-  indicates that the model was trained with that particular fold held out.
-
-  The ALL_FOLDS version refers to the distilled model that was trained on
-  an ensemble of teacher models trained on all folds.
-  """
-
-  ALL_FOLDS = enum.auto()  # Default model version if None explicitly set.
-  FOLD_0 = enum.auto()
-  FOLD_1 = enum.auto()
-  FOLD_2 = enum.auto()
-  FOLD_3 = enum.auto()
-
-
+ModelVersion = dna_model.ModelVersion
 Output = dna_output.Output
 OutputMetadata = dna_output.OutputMetadata
 OutputType = dna_output.OutputType
