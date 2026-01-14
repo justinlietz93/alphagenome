@@ -76,6 +76,8 @@ docs = [
 ]
 scripts = [
     'absl-py',
+    'alphagenome',
+    'pandas',
     'pyarrow',
     'pyranges',
 ]
@@ -95,7 +97,7 @@ exclude = ['*_test.py', 'examples']
 
 [tool.hatch.envs.hatch-test]
 default-args = []
-extra-dependencies=['google-benchmark', 'typeguard==2.13.3']
+extra-dependencies=['google-benchmark', 'pyranges', 'typeguard==2.13.3']
 parallel = true
 
 
