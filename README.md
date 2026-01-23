@@ -1,6 +1,6 @@
 ![AlphaGenome header image](docs/source/_static/header.png)
 
-# AlphaGenome
+# AlphaGenome API
 
 ![PyPI Python version](https://img.shields.io/pypi/pyversions/AlphaGenome)
 ![Presubmit Checks](https://github.com/google-deepmind/alphagenome/actions/workflows/presubmit_checks.yml/badge.svg)
@@ -9,7 +9,8 @@
 [**Quick start**](#quick-start) | [**Installation**](#installation) |
 [**Documentation**](https://www.alphagenomedocs.com/) |
 [**Community**](https://www.alphagenomecommunity.com) |
-[**Terms of Use**](https://deepmind.google.com/science/alphagenome/terms)
+[**Terms of Use**](https://deepmind.google.com/science/alphagenome/terms) |
+[**Model code**](https://github.com/google-deepmind/alphagenome_research)
 
 The AlphaGenome API provides access to AlphaGenome, Google DeepMind’s unifying
 model for deciphering the regulatory code within DNA sequences. This repository
@@ -23,7 +24,7 @@ sequences of up to 1 million base pairs in length and can deliver predictions at
 single base-pair resolution for most outputs. AlphaGenome achieves
 state-of-the-art performance across a range of genomic prediction benchmarks,
 including numerous diverse variant effect prediction tasks (detailed in
-[Avsec et al. 2025](https://doi.org/10.1101/2025.06.25.661532)).
+[Avsec et al.](https://www.nature.com/articles/s41586-025-10014-0)).
 
 The API is offered free of charge for
 [non-commercial use](https://deepmind.google.com/science/alphagenome/terms)
@@ -58,6 +59,10 @@ documentation. For support and feedback:
     AlphaGenome team on alphagenome@google.com and we will be happy to assist
     you with questions. We’re working hard to answer all inquiries but there may
     be a short delay in our response due to the high volume we are receiving.
+
+A commercial offering of AlphaGenome is in early stage testing, you can express
+interest to access the product
+[here](https://docs.google.com/forms/d/e/1FAIpQLSd0iyoC0Mo1DGB1uiuECBB8OErYzSCNYocy6hZ7nbsCd_TXhQ/viewform).
 
 ## Quick start
 
@@ -148,12 +153,14 @@ If you use AlphaGenome in your research, please cite using:
 
 ```bibtex
 @article{alphagenome,
-  title={{AlphaGenome}: advancing regulatory variant effect prediction with a unified {DNA} sequence model},
+  title={Advancing regulatory variant effect prediction with {AlphaGenome}},
   author={Avsec, {\v Z}iga and Latysheva, Natasha and Cheng, Jun and Novati, Guido and Taylor, Kyle R. and Ward, Tom and Bycroft, Clare and Nicolaisen, Lauren and Arvaniti, Eirini and Pan, Joshua and Thomas, Raina and Dutordoir, Vincent and Perino, Matteo and De, Soham and Karollus, Alexander and Gayoso, Adam and Sargeant, Toby and Mottram, Anne and Wong, Lai Hong and Drot{\'a}r, Pavol and Kosiorek, Adam and Senior, Andrew and Tanburn, Richard and Applebaum, Taylor and Basu, Souradeep and Hassabis, Demis and Kohli, Pushmeet},
-  year={2025},
-  doi={https://doi.org/10.1101/2025.06.25.661532},
-  publisher={Cold Spring Harbor Laboratory},
-  journal={bioRxiv}
+  journal={Nature},
+  volume={649},
+  number={8099},
+  year={2026},
+  doi={10.1038/s41586-025-10014-0},
+  publisher={Nature Publishing Group UK London}
 }
 ```
 
